@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Habana rent",
+  title: "🍠 Casabe",
   description:
     "A beautiful property rental explorer with interactive maps by Square UI",
 };

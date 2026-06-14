@@ -7,7 +7,6 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  DropdownMenuLabel, // Importamos la etiqueta para la cabecera
 } from "@/components/ui/dropdown-menu";
 import {
   Dialog,
@@ -18,7 +17,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Settings, ChevronsUpDown, UserIcon } from "lucide-react"; // Añadimos UserIcon por si no hay foto
+import Link from "next/link";
+import {
+  Settings,
+  ChevronsUpDown,
+  UserIcon,
+  Megaphone,
+  Bookmark,
+} from "lucide-react"; // Añadimos UserIcon por si no hay foto
 import { LogoutButton } from "../../logout-button";
 import TabsUnderlineDemo from "../profile/Profile";
 
@@ -35,6 +41,11 @@ interface UserMenuClientProps {
 export function UserMenuClient({ user }: UserMenuClientProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+
+  const menuItems = [
+    { label: "Favoritos", href: "/favorites", Icon: Bookmark },
+    { label: "Mis anuncios", href: "/my-ads", Icon: Megaphone },
+  ];
 
   // Fallbacks de información en caso de que falten datos
   const userImage = user?.avatar_url;
@@ -82,6 +93,21 @@ export function UserMenuClient({ user }: UserMenuClientProps) {
           sideOffset={8}
         >
           {/* Opciones del menú */}
+          {menuItems.map((item, index) => (
+            <DropdownMenuItem
+              key={`${item.href}-${index}`}
+              asChild
+              className="gap-2 cursor-pointer py-2"
+            >
+              <Link href={item.href}>
+                <item.Icon className="size-4 text-muted-foreground" />
+                <span>{item.label}</span>
+              </Link>
+            </DropdownMenuItem>
+          ))}
+
+          <DropdownMenuSeparator />
+
           <DropdownMenuItem
             className="gap-2 cursor-pointer py-2"
             onSelect={() => {
@@ -93,11 +119,7 @@ export function UserMenuClient({ user }: UserMenuClientProps) {
             <span>Settings</span>
           </DropdownMenuItem>
 
-          <DropdownMenuSeparator />
-
-          <div className="p-1">
-            <LogoutButton />
-          </div>
+          <LogoutButton />
         </DropdownMenuContent>
       </DropdownMenu>
 

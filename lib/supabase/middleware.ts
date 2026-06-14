@@ -20,6 +20,8 @@ export async function updateSession(request: NextRequest) {
 
   if (
     request.nextUrl.pathname !== "/" &&
+    request.nextUrl.pathname !== "/compra" &&
+    request.nextUrl.pathname !== "/alquiler" &&
     !user &&
     !request.nextUrl.pathname.startsWith("/login") &&
     !request.nextUrl.pathname.startsWith("/auth")

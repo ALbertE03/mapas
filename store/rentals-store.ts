@@ -84,7 +84,7 @@ export const useRentalsStore = create<RentalsState>((set, get) => ({
   amenities: [],
   sortBy: "price-low",
   selectedListingId: null,
-  mapCenter: { lat: 48.8566, lng: 2.3522 },
+  mapCenter: { lat: 23.1436, lng: -82.3642 },
   mapZoom: 10,
   mapStyle: "default",
   userLocation: null,

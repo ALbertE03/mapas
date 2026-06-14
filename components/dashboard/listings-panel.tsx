@@ -38,13 +38,13 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useMediaQuery } from "usehooks-ts";
 import { cn } from "@/lib/utils";
 
-type PanelMode = "all" | "favorites";
+type PanelMode = "compra" | "alquiler";
 
 interface ListingsPanelProps {
   mode?: PanelMode;
 }
 
-export function ListingsPanel({ mode = "all" }: ListingsPanelProps) {
+export function ListingsPanel({ mode = "compra" }: ListingsPanelProps) {
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
   const {
     selectedListingId,
@@ -73,7 +73,7 @@ export function ListingsPanel({ mode = "all" }: ListingsPanelProps) {
 
   const getListings = () => {
     switch (mode) {
-      case "favorites":
+      case "alquiler":
         return getFavoriteListings();
       default:
         return getFilteredListings();
@@ -116,7 +116,7 @@ export function ListingsPanel({ mode = "all" }: ListingsPanelProps) {
       <div className="p-3 border-b flex items-center justify-between">
         <div>
           <h2 className="font-semibold text-base">
-            {mode === "favorites" ? "Favorites" : "All Properties"}
+            {mode === "alquiler" ? "Alquiler" : "Compra"}
           </h2>
           <p className="text-xs text-muted-foreground">
             {listings.length}{" "}
@@ -239,14 +239,14 @@ export function ListingsPanel({ mode = "all" }: ListingsPanelProps) {
                     },
                     () => {
                       alert(
-                        "Unable to get your location. Please try again later."
+                        "Unable to get your location. Please try again later.",
                       );
                     },
                     {
                       enableHighAccuracy: false,
                       timeout: 5000,
                       maximumAge: 300000,
-                    }
+                    },
                   );
                 }}
                 className="gap-2"
@@ -281,7 +281,7 @@ export function ListingsPanel({ mode = "all" }: ListingsPanelProps) {
                   className={cn(
                     "group cursor-pointer rounded-xl border bg-card transition-all hover:shadow-lg overflow-hidden",
                     isSelected &&
-                      "border-primary shadow-lg ring-2 ring-primary/20"
+                      "border-primary shadow-lg ring-2 ring-primary/20",
                   )}
                 >
                   <div className="relative aspect-4/3 overflow-hidden">
@@ -305,7 +305,7 @@ export function ListingsPanel({ mode = "all" }: ListingsPanelProps) {
                       <CarouselPrevious className="left-2 h-8 w-8 opacity-0! group-hover:opacity-100! transition-opacity bg-white/90 hover:bg-white" />
                       <CarouselNext className="right-2 h-8 w-8 opacity-0! group-hover:opacity-100! transition-opacity bg-white/90 hover:bg-white" />
                     </Carousel>
-                    <div className="absolute top-2 right-2 z-10">
+                    {/* <div className="absolute top-2 right-2 z-10">
                       <Button
                         variant="ghost"
                         size="icon"
@@ -320,11 +320,11 @@ export function ListingsPanel({ mode = "all" }: ListingsPanelProps) {
                             "h-4 w-4 transition-colors",
                             listing.isFavorite
                               ? "fill-destructive text-destructive"
-                              : "text-foreground"
+                              : "text-foreground",
                           )}
                         />
                       </Button>
-                    </div>
+                    </div> */}
                     {listing.isNew && (
                       <div className="absolute top-2 left-2 z-10">
                         <Badge
@@ -418,7 +418,7 @@ export function ListingsPanel({ mode = "all" }: ListingsPanelProps) {
                     "group cursor-pointer rounded-xl border bg-card transition-all hover:shadow-lg overflow-hidden",
                     isSelected &&
                       "border-primary shadow-lg ring-2 ring-primary/20",
-                    "flex flex-col sm:flex-row"
+                    "flex flex-col sm:flex-row",
                   )}
                 >
                   <div className="relative w-full h-48 sm:w-32 sm:h-32 md:w-40 md:h-40 flex-shrink-0 overflow-hidden">
@@ -447,7 +447,7 @@ export function ListingsPanel({ mode = "all" }: ListingsPanelProps) {
                             "h-3.5 w-3.5 sm:h-3 sm:w-3 transition-colors",
                             listing.isFavorite
                               ? "fill-destructive text-destructive"
-                              : "text-foreground"
+                              : "text-foreground",
                           )}
                         />
                       </Button>

@@ -11,7 +11,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Settings } from "lucide-react";
 
 interface SettingsButtonProps {
   trigger: React.ReactNode;

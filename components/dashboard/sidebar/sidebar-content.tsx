@@ -8,21 +8,10 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuBadge,
-  SidebarMenuButton,
-  SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import { Search, Minus, Plus } from "lucide-react";
@@ -34,8 +23,8 @@ import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { id: "all", title: "Compra", href: "/" },
-  { id: "favorites", title: "Alaquiler", href: "/favorites" },
+  { id: "compra", title: "Compra", href: "/compra" },
+  { id: "alquiler", title: "Alaquiler", href: "/alquiler" },
 ];
 
 const propertyTypes: PropertyType[] = [
@@ -90,8 +79,8 @@ export function RentalSidebarContent({
               {navItems.map((item) => {
                 const isActive = pathname === item.href;
                 let badge: number | undefined;
-                if (item.id === "favorites") badge = favoriteCount;
-                if (item.id === "all") badge = allCount;
+                if (item.id === "alquiler") badge = favoriteCount;
+                if (item.id === "compra") badge = allCount;
 
                 return (
                   /* 
