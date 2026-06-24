@@ -14,7 +14,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
-import { Search, Minus, Plus } from "lucide-react";
+import { Search, Minus, Plus, PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRentalsStore } from "@/store/rentals-store";
 import { propertyTypeLabels, type PropertyType } from "@/mock-data/listings";
@@ -55,6 +55,7 @@ export function RentalSidebarContent({
     getFilteredListings,
     getFavoriteListings,
     resetFilters,
+    maxPrice,
   } = useRentalsStore();
 
   const favoriteCount = listings.filter((l) => l.isFavorite).length;
@@ -63,7 +64,7 @@ export function RentalSidebarContent({
 
   const activeFiltersCount =
     selectedPropertyTypes.length +
-    (priceRange[0] !== 0 || priceRange[1] !== 500 ? 1 : 0) +
+    (priceRange[0] !== 0 || priceRange[1] !== maxPrice ? 1 : 0) +
     (bedrooms !== null ? 1 : 0) +
     (bathrooms !== null ? 1 : 0);
   return (
@@ -118,6 +119,20 @@ export function RentalSidebarContent({
             </TabsList>
           </Tabs>
         </SidebarGroupContent>
+      </SidebarGroup>
+
+      <SidebarGroup className="p-0 mt-2">
+        <Button
+          variant="default"
+          size="sm"
+          className="w-full gap-2 h-9"
+          asChild
+        >
+          <Link href="/create-ad">
+            <PlusCircle className="size-4" />
+            Create publication
+          </Link>
+        </Button>
       </SidebarGroup>
 
       <SidebarGroup className="p-0 mt-4">
@@ -201,8 +216,8 @@ export function RentalSidebarContent({
                       setPriceRange([value[0], value[1]])
                     }
                     min={0}
-                    max={500}
-                    step={10}
+                    max={maxPrice}
+                    step={Math.max(1, Math.round(maxPrice / 100))}
                     className="w-full"
                   />
                   <div className="flex items-center justify-between mt-2">

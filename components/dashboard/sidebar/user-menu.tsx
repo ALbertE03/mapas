@@ -24,16 +24,17 @@ import {
   UserIcon,
   Megaphone,
   Bookmark,
-} from "lucide-react"; // Añadimos UserIcon por si no hay foto
+  PlusCircle,
+} from "lucide-react";
 import { LogoutButton } from "../../logout-button";
 import TabsUnderlineDemo from "../profile/Profile";
 
-// Definimos la interfaz básica de lo que esperas de Supabase
 interface UserMenuClientProps {
   user: {
-    avatar_url?: string;
+    id?: string;
+    avatar_url?: string | null;
     name?: string;
-    full_name?: string; // Supabase suele llamarlo full_name o name
+    full_name?: string;
     email?: string;
   };
 }
@@ -43,11 +44,12 @@ export function UserMenuClient({ user }: UserMenuClientProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const menuItems = [
-    { label: "Favoritos", href: "/favorites", Icon: Bookmark },
-    { label: "Mis anuncios", href: "/my-ads", Icon: Megaphone },
+    { label: "Create ad", href: "/create-ad", Icon: PlusCircle },
+    { label: "Favorites", href: "/favorites", Icon: Bookmark },
+    { label: "My ads", href: "/my-ads", Icon: Megaphone },
   ];
 
-  // Fallbacks de información en caso de que falten datos
+
   const userImage = user?.avatar_url;
   const userName = user?.full_name || user?.name || "Usuario";
   const userEmail = user?.email || "sin-correo@dominio.com";
