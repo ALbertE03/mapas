@@ -45,7 +45,7 @@ export function UserMenuClient({ user }: UserMenuClientProps) {
 
   const menuItems = [
     { label: "Create ad", href: "/create-ad", Icon: PlusCircle },
-    { label: "Favorites", href: "/favorites", Icon: Bookmark },
+    { label: "Favorites", href: "/favoritos", Icon: Bookmark },
     { label: "My ads", href: "/my-ads", Icon: Megaphone },
   ];
 

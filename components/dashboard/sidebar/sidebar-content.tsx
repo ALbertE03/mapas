@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -17,7 +18,7 @@ import { Slider } from "@/components/ui/slider";
 import { Search, Minus, Plus, PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRentalsStore } from "@/store/rentals-store";
-import { propertyTypeLabels, type PropertyType } from "@/mock-data/listings";
+import { propertyTypeLabels } from "@/mock-data/listings";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
@@ -25,15 +26,6 @@ import { cn } from "@/lib/utils";
 const navItems = [
   { id: "compra", title: "Compra", href: "/compra" },
   { id: "alquiler", title: "Alaquiler", href: "/alquiler" },
-];
-
-const propertyTypes: PropertyType[] = [
-  "apartment",
-  "house",
-  "villa",
-  "studio",
-  "loft",
-  "cottage",
 ];
 
 export function RentalSidebarContent({
@@ -61,6 +53,11 @@ export function RentalSidebarContent({
   const favoriteCount = listings.filter((l) => l.isFavorite).length;
   const allCount = listings.length;
   const filteredCount = getFilteredListings().length;
+
+  const propertyTypes = React.useMemo(
+    () => [...new Set(listings.map((l) => l.propertyType))],
+    [listings],
+  );
 
   const activeFiltersCount =
     selectedPropertyTypes.length +
