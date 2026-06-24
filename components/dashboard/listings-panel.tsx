@@ -21,6 +21,7 @@ import { type Listing, propertyTypeLabels } from "@/mock-data/listings";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ReviewDialog } from "./review-dialog";
+import { ReviewsDialog } from "./reviews-dialog";
 import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
@@ -49,6 +50,7 @@ interface ListingsPanelProps {
 export function ListingsPanel({ mode = "compra" }: ListingsPanelProps) {
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
   const [reviewTarget, setReviewTarget] = React.useState<{ id: string; title: string } | null>(null);
+  const [reviewsTarget, setReviewsTarget] = React.useState<{ id: string; title: string } | null>(null);
   const [ratings, setRatings] = React.useState<Record<string, { avg: number; count: number }>>({});
 
   React.useEffect(() => {
@@ -415,6 +417,16 @@ export function ListingsPanel({ mode = "compra" }: ListingsPanelProps) {
                         <span className="text-muted-foreground">
                           ({ratings[listing.id] ? ratings[listing.id].count : listing.reviewCount})
                         </span>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setReviewsTarget({ id: listing.id, title: listing.title });
+                          }}
+                          className="text-xs text-primary hover:underline ml-1"
+                        >
+                          Ver reseñas
+                        </button>
                       </div>
                       <span className="text-muted-foreground">•</span>
                       <span className="text-muted-foreground">
@@ -606,6 +618,12 @@ export function ListingsPanel({ mode = "compra" }: ListingsPanelProps) {
         propertyTitle={reviewTarget?.title ?? ""}
         open={!!reviewTarget}
         onOpenChange={(open) => { if (!open) setReviewTarget(null); }}
+      />
+      <ReviewsDialog
+        propertyId={reviewsTarget?.id ?? ""}
+        propertyTitle={reviewsTarget?.title ?? ""}
+        open={!!reviewsTarget}
+        onOpenChange={(open) => { if (!open) setReviewsTarget(null); }}
       />
     </div>
   );

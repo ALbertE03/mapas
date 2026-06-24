@@ -122,16 +122,19 @@
   body {
     @apply bg-background text-foreground;
   }
-  .maplibregl-popup-content {
-    @apply bg-transparent! shadow-none! p-0! rounded-none!;
-  }
-  .maplibregl-popup-tip {
-    @apply hidden!;
-  }
 }
 
-.maplibregl-popup-content {
-  @apply !bg-background !text-foreground !rounded-lg !border !border-border !shadow-lg !p-0;
+.listing-popup .maplibregl-popup-content {
+  background-color: var(--background) !important;
+  padding: 0 !important;
+  border-radius: 24px !important;
+  overflow: hidden;
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.2),
+    0 4px 12px rgba(0, 0, 0, 0.1) !important;
+  min-width: 320px;
+  max-width: 400px;
+  width: 400px;
+  cursor: pointer;
 }
 
 .maplibregl-popup-tip {
@@ -148,23 +151,6 @@
 
 .close-popup-btn:hover {
   transform: scale(1.05);
-}
-
-.listing-popup .maplibregl-popup-content {
-  background-color: var(--background) !important;
-  padding: 0 !important;
-  border-radius: 24px !important;
-  overflow: hidden;
-  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.2),
-    0 4px 12px rgba(0, 0, 0, 0.1) !important;
-  min-width: 320px;
-  max-width: 400px;
-  width: 400px;
-  cursor: pointer;
-}
-
-.listing-popup .maplibregl-popup-tip {
-  display: none !important;
 }
 
 .dark .listing-popup .maplibregl-popup-content {
