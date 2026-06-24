@@ -49,6 +49,25 @@ interface ListingsPanelProps {
 export function ListingsPanel({ mode = "compra" }: ListingsPanelProps) {
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
   const [reviewTarget, setReviewTarget] = React.useState<{ id: string; title: string } | null>(null);
+  const [ratings, setRatings] = React.useState<Record<string, { avg: number; count: number }>>({});
+
+  React.useEffect(() => {
+    (async () => {
+      const supabase = createClient();
+      const { data: allReviews } = await supabase.from("reviews").select("property_id, rating");
+      const map: Record<string, number[]> = {};
+      for (const r of allReviews || []) {
+        if (!map[r.property_id]) map[r.property_id] = [];
+        map[r.property_id].push(r.rating);
+      }
+      const result: Record<string, { avg: number; count: number }> = {};
+      for (const [id, ratings] of Object.entries(map)) {
+        result[id] = { avg: ratings.reduce((a, b) => a + b, 0) / ratings.length, count: ratings.length };
+      }
+      setRatings(result);
+    })();
+  }, []);
+
   const {
     selectedListingId,
     searchQuery,
@@ -65,19 +84,28 @@ export function ListingsPanel({ mode = "compra" }: ListingsPanelProps) {
   } = useRentalsStore();
 
   const handleToggleFavorite = async (listingId: string) => {
-    const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    try {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
-    const listing = useRentalsStore.getState().listings.find((l) => l.id === listingId);
-    if (!listing) return;
+      const listing = useRentalsStore.getState().listings.find((l) => l.id === listingId);
+      if (!listing) return;
 
-    if (listing.isFavorite) {
-      await supabase.from("favorites").delete().eq("property_id", listingId).eq("user_id", user.id);
-    } else {
-      await supabase.from("favorites").insert({ property_id: listingId, user_id: user.id });
+      if (listing.isFavorite) {
+        const { error } = await supabase.from("favorites").delete().eq("property_id", listingId).eq("user_id", user.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from("favorites").insert({ property_id: listingId, user_id: user.id });
+        if (error) {
+          if (error.code === "23505") return; // unique violation, already favorited
+          throw error;
+        }
+      }
+      toggleFavorite(listingId);
+    } catch (err) {
+      console.error("Failed to toggle favorite:", err);
     }
-    toggleFavorite(listingId);
   };
 
   const isDesktop = useMediaQuery("(min-width: 640px)");
@@ -382,10 +410,10 @@ export function ListingsPanel({ mode = "compra" }: ListingsPanelProps) {
                       <div className="flex items-center gap-1">
                         <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
                         <span className="font-medium">
-                          {listing.rating.toFixed(1)}
+                          {ratings[listing.id] ? ratings[listing.id].avg.toFixed(1) : listing.rating.toFixed(1)}
                         </span>
                         <span className="text-muted-foreground">
-                          ({listing.reviewCount})
+                          ({ratings[listing.id] ? ratings[listing.id].count : listing.reviewCount})
                         </span>
                       </div>
                       <span className="text-muted-foreground">•</span>
@@ -510,10 +538,10 @@ export function ListingsPanel({ mode = "compra" }: ListingsPanelProps) {
                         <div className="flex items-center gap-1">
                           <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
                           <span className="font-medium">
-                            {listing.rating.toFixed(1)}
+                            {ratings[listing.id] ? ratings[listing.id].avg.toFixed(1) : listing.rating.toFixed(1)}
                           </span>
                           <span className="text-muted-foreground">
-                            ({listing.reviewCount})
+                            ({ratings[listing.id] ? ratings[listing.id].count : listing.reviewCount})
                           </span>
                         </div>
                         <span className="text-muted-foreground hidden sm:inline">
