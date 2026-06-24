@@ -6,7 +6,7 @@ export default function RentalsPage() {
   return (
     <div className="relative h-full w-full overflow-hidden">
       <MapView />
-      <ListingsPanel />
+      <ListingsPanel mode="compra" />
       <MapControls />
     </div>
   );

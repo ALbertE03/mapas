@@ -74,12 +74,11 @@ export function ListingsPanel({ mode = "compra" }: ListingsPanelProps) {
   }, [isDesktop, isPanelVisible]);
 
   const getListings = () => {
-    switch (mode) {
-      case "alquiler":
-        return getFavoriteListings();
-      default:
-        return getFilteredListings();
+    const all = getFilteredListings();
+    if (mode === "alquiler") {
+      return all.filter((l) => l.transactionType === "rent" || !l.transactionType);
     }
+    return all.filter((l) => l.transactionType === "sell" || !l.transactionType);
   };
 
   const listings = getListings();

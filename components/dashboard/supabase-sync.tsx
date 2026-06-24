@@ -44,6 +44,7 @@ export function SupabaseSync() {
         country: p.country,
         coordinates: { lat: p.latitude, lng: p.longitude },
         pricePerNight: p.price,
+        transactionType: p.transaction_type,
         propertyType: p.property_type as any,
         bedrooms: p.bedrooms,
         beds: p.bedrooms,

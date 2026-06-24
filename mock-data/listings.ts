@@ -18,6 +18,7 @@ export type Listing = {
     lng: number;
   };
   pricePerNight: number;
+  transactionType?: "sell" | "rent";
   propertyType: PropertyType;
   bedrooms: number;
   beds: number;

@@ -50,8 +50,8 @@ export function RentalSidebarContent({
     maxPrice,
   } = useRentalsStore();
 
-  const favoriteCount = listings.filter((l) => l.isFavorite).length;
-  const allCount = listings.length;
+  const rentCount = listings.filter((l) => l.transactionType === "rent" || !l.transactionType).length;
+  const sellCount = listings.filter((l) => l.transactionType === "sell" || !l.transactionType).length;
   const filteredCount = getFilteredListings().length;
 
   const propertyTypes = React.useMemo(
@@ -76,9 +76,9 @@ export function RentalSidebarContent({
             <TabsList className="w-full justify-start h-10 p-1 bg-muted">
               {navItems.map((item) => {
                 const isActive = pathname === item.href;
-                let badge: number | undefined;
-                if (item.id === "alquiler") badge = favoriteCount;
-                if (item.id === "compra") badge = allCount;
+                        let badge: number | undefined;
+                        if (item.id === "alquiler") badge = rentCount;
+                        if (item.id === "compra") badge = sellCount;
 
                 return (
                   /* 
