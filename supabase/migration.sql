@@ -86,11 +86,14 @@ CREATE POLICY "Users can delete own properties"
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO public.profiles (id, full_name, avatar_url)
+  INSERT INTO public.profiles (id, full_name, avatar_url, mobile, country, gender)
   VALUES (
     NEW.id,
     COALESCE(NEW.raw_user_meta_data ->> 'full_name', ''),
-    COALESCE(NEW.raw_user_meta_data ->> 'avatar_url', '')
+    COALESCE(NEW.raw_user_meta_data ->> 'avatar_url', ''),
+    NEW.raw_user_meta_data ->> 'mobile',
+    NEW.raw_user_meta_data ->> 'country',
+    NEW.raw_user_meta_data ->> 'gender'
   );
   RETURN NEW;
 END;
