@@ -1,13 +1,5 @@
-import { MapView } from "@/components/dashboard/map-view";
-import { ListingsPanel } from "@/components/dashboard/listings-panel";
-import { MapControls } from "@/components/dashboard/map-controls";
+import { FavoritesView } from "@/components/dashboard/favorites-view";
 
-export default function RentalsPage() {
-  return (
-    <div className="relative h-full w-full overflow-hidden">
-      <MapView />
-      <ListingsPanel />
-      <MapControls />
-    </div>
-  );
+export default function FavoritesPage() {
+  return <FavoritesView />;
 }
