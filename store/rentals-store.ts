@@ -1,10 +1,8 @@
 import { create } from "zustand";
 import {
-  listings as initialListings,
   type Listing,
   type PropertyType,
 } from "@/mock-data/listings";
-import type { PropertyRow } from "@/lib/supabase/queries";
 
 type SortBy =
   | "price-low"
@@ -86,11 +84,11 @@ function calculateDistance(
 }
 
 export const useRentalsStore = create<RentalsState>((set, get) => ({
-  listings: initialListings,
-  maxPrice: computeMaxPrice(initialListings),
+  listings: [],
+  maxPrice: 500,
   searchQuery: "",
   selectedPropertyTypes: [],
-  priceRange: [0, computeMaxPrice(initialListings)],
+  priceRange: [0, 500],
   bedrooms: null,
   bathrooms: null,
   beds: null,

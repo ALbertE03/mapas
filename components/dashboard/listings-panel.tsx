@@ -38,6 +38,7 @@ import {
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useMediaQuery } from "usehooks-ts";
 import { cn } from "@/lib/utils";
+import { createClient } from "@/lib/supabase/client";
 
 type PanelMode = "compra" | "alquiler";
 
@@ -62,6 +63,19 @@ export function ListingsPanel({ mode = "compra" }: ListingsPanelProps) {
     setMapZoom,
     setUserLocation,
   } = useRentalsStore();
+
+  const handleToggleFavorite = async (listingId: string) => {
+    const supabase = createClient();
+    const listing = useRentalsStore.getState().listings.find((l) => l.id === listingId);
+    if (!listing) return;
+
+    if (listing.isFavorite) {
+      await supabase.from("favorites").delete().eq("property_id", listingId);
+    } else {
+      await supabase.from("favorites").insert({ property_id: listingId });
+    }
+    toggleFavorite(listingId);
+  };
 
   const isDesktop = useMediaQuery("(min-width: 640px)");
   const [isPanelVisible, setIsPanelVisible] = React.useState(true);
@@ -306,14 +320,14 @@ export function ListingsPanel({ mode = "compra" }: ListingsPanelProps) {
                       <CarouselPrevious className="left-2 h-8 w-8 opacity-0! group-hover:opacity-100! transition-opacity bg-white/90 hover:bg-white" />
                       <CarouselNext className="right-2 h-8 w-8 opacity-0! group-hover:opacity-100! transition-opacity bg-white/90 hover:bg-white" />
                     </Carousel>
-                    {/* <div className="absolute top-2 right-2 z-10">
+                    <div className="absolute top-2 right-2 z-10">
                       <Button
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background"
                         onClick={(e) => {
                           e.stopPropagation();
-                          toggleFavorite(listing.id);
+                          handleToggleFavorite(listing.id);
                         }}
                       >
                         <Heart
@@ -325,7 +339,7 @@ export function ListingsPanel({ mode = "compra" }: ListingsPanelProps) {
                           )}
                         />
                       </Button>
-                    </div> */}
+                    </div>
                     {listing.isNew && (
                       <div className="absolute top-2 left-2 z-10">
                         <Badge
@@ -452,7 +466,7 @@ export function ListingsPanel({ mode = "compra" }: ListingsPanelProps) {
                         className="h-7 w-7 sm:h-6 sm:w-6 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background"
                         onClick={(e) => {
                           e.stopPropagation();
-                          toggleFavorite(listing.id);
+                          handleToggleFavorite(listing.id);
                         }}
                       >
                         <Heart

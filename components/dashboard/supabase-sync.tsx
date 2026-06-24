@@ -4,10 +4,6 @@ import { useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRentalsStore } from "@/store/rentals-store";
 
-function isUuid(id: string) {
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
-}
-
 export function SupabaseSync() {
   const setListings = useRentalsStore((s) => s.setListings);
 
@@ -15,27 +11,30 @@ export function SupabaseSync() {
     (async () => {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
 
-      const { data: properties } = await supabase
+      let query = supabase
         .from("properties")
         .select("*")
         .order("created_at", { ascending: false });
 
-      const { data: favs } = await supabase
-        .from("favorites")
-        .select("property_id")
-        .eq("user_id", user.id);
+      if (user) {
+        query = query.or(`is_active.eq.true,user_id.eq.${user.id}`);
+      } else {
+        query = query.eq("is_active", true);
+      }
 
-      const favIds = new Set((favs || []).map((f: any) => f.property_id));
+      const { data: properties } = await query;
 
-      const store = useRentalsStore.getState();
+      let favIds = new Set<string>();
+      if (user) {
+        const { data: favs } = await supabase
+          .from("favorites")
+          .select("property_id")
+          .eq("user_id", user.id);
+        favIds = new Set((favs || []).map((f: any) => f.property_id));
+      }
 
-      // Remove old Supabase listings, keep mock data
-      const mockListings = store.listings.filter((l) => !isUuid(l.id));
-
-      // Map current Supabase properties to Listing format
-      const supabaseListings = (properties || []).map((p) => ({
+      const listings = (properties || []).map((p) => ({
         id: p.id,
         title: p.title,
         description: p.description || "",
@@ -60,7 +59,7 @@ export function SupabaseSync() {
         instantBook: false,
       }));
 
-      setListings([...supabaseListings, ...mockListings]);
+      setListings(listings);
     })();
   }, [setListings]);
 
