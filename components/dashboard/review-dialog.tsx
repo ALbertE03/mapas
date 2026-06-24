@@ -53,7 +53,12 @@ export function ReviewDialog({
         rating,
         comment: comment || null,
       });
-      if (insertError) throw insertError;
+      if (insertError) {
+        if (insertError.code === "23505") {
+          throw new Error("Ya comentaste en esta propiedad. Solo se puede dejar una reseña por propiedad.");
+        }
+        throw insertError;
+      }
       onReviewSubmitted?.();
       onOpenChange(false);
       setRating(0);
