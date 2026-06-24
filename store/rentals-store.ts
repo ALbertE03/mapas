@@ -4,6 +4,7 @@ import {
   type Listing,
   type PropertyType,
 } from "@/mock-data/listings";
+import type { PropertyRow } from "@/lib/supabase/queries";
 
 type SortBy =
   | "price-low"
@@ -46,12 +47,23 @@ interface RentalsState {
   setMapZoom: (zoom: number) => void;
   setMapStyle: (style: MapStyle) => void;
   setUserLocation: (location: { lat: number; lng: number } | null) => void;
+  addListing: (listing: Listing) => void;
+  setListings: (listings: Listing[]) => void;
+  maxPrice: number;
   getFilteredListings: () => Listing[];
   getFavoriteListings: () => Listing[];
   resetFilters: () => void;
 }
 
 const defaultPriceRange: [number, number] = [0, 500];
+
+function computeMaxPrice(listings: Listing[]): number {
+  if (listings.length === 0) return 500;
+  const max = Math.max(...listings.map((l) => l.pricePerNight));
+  // Round up to next nice number
+  const magnitude = Math.pow(10, Math.floor(Math.log10(max)));
+  return Math.ceil(max / magnitude) * magnitude;
+}
 
 function calculateDistance(
   lat1: number,
@@ -74,9 +86,10 @@ function calculateDistance(
 
 export const useRentalsStore = create<RentalsState>((set, get) => ({
   listings: initialListings,
+  maxPrice: computeMaxPrice(initialListings),
   searchQuery: "",
   selectedPropertyTypes: [],
-  priceRange: defaultPriceRange,
+  priceRange: [0, computeMaxPrice(initialListings)],
   bedrooms: null,
   bathrooms: null,
   beds: null,
@@ -137,16 +150,31 @@ export const useRentalsStore = create<RentalsState>((set, get) => ({
   setUserLocation: (location) => set({ userLocation: location }),
 
   resetFilters: () =>
-    set({
+    set((state) => ({
       searchQuery: "",
       selectedPropertyTypes: [],
-      priceRange: defaultPriceRange,
+      priceRange: [0, state.maxPrice],
       bedrooms: null,
       bathrooms: null,
       beds: null,
       guests: null,
       amenities: [],
       sortBy: "price-low",
+    })),
+
+  addListing: (listing) =>
+    set((state) => {
+      const newListings = [listing, ...state.listings];
+      return {
+        listings: newListings,
+        maxPrice: computeMaxPrice(newListings),
+      };
+    }),
+
+  setListings: (listings) =>
+    set({
+      listings,
+      maxPrice: computeMaxPrice(listings),
     }),
 
   getFilteredListings: () => {
