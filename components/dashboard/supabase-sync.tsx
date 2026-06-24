@@ -4,6 +4,10 @@ import { useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRentalsStore } from "@/store/rentals-store";
 
+function isUuid(id: string) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+}
+
 export function SupabaseSync() {
   const setListings = useRentalsStore((s) => s.setListings);
 
@@ -18,8 +22,6 @@ export function SupabaseSync() {
         .select("*")
         .order("created_at", { ascending: false });
 
-      if (!properties || properties.length === 0) return;
-
       const { data: favs } = await supabase
         .from("favorites")
         .select("property_id")
@@ -28,37 +30,36 @@ export function SupabaseSync() {
       const favIds = new Set((favs || []).map((f: any) => f.property_id));
 
       const store = useRentalsStore.getState();
-      const existingIds = new Set(store.listings.map((l) => l.id));
 
-      const newListings = properties
-        .filter((p) => !existingIds.has(p.id))
-        .map((p) => ({
-          id: p.id,
-          title: p.title,
-          description: p.description || "",
-          address: p.address || "",
-          city: p.city || "",
-          country: p.country,
-          coordinates: { lat: p.latitude, lng: p.longitude },
-          pricePerNight: p.price,
-          propertyType: p.property_type as any,
-          bedrooms: p.bedrooms,
-          beds: p.bedrooms,
-          bathrooms: p.bathrooms,
-          guests: p.guests,
-          rating: 0,
-          reviewCount: 0,
-          images: p.images,
-          amenities: p.amenities,
-          host: { name: "You", avatar: "", isSuperhost: false },
-          isFavorite: favIds.has(p.id),
-          isNew: true,
-          instantBook: false,
-        }));
+      // Remove old Supabase listings, keep mock data
+      const mockListings = store.listings.filter((l) => !isUuid(l.id));
 
-      if (newListings.length > 0) {
-        setListings([...newListings, ...store.listings]);
-      }
+      // Map current Supabase properties to Listing format
+      const supabaseListings = (properties || []).map((p) => ({
+        id: p.id,
+        title: p.title,
+        description: p.description || "",
+        address: p.address || "",
+        city: p.city || "",
+        country: p.country,
+        coordinates: { lat: p.latitude, lng: p.longitude },
+        pricePerNight: p.price,
+        propertyType: p.property_type as any,
+        bedrooms: p.bedrooms,
+        beds: p.bedrooms,
+        bathrooms: p.bathrooms,
+        guests: p.guests,
+        rating: 0,
+        reviewCount: 0,
+        images: p.images,
+        amenities: p.amenities,
+        host: { name: "You", avatar: "", isSuperhost: false },
+        isFavorite: favIds.has(p.id),
+        isNew: true,
+        instantBook: false,
+      }));
+
+      setListings([...supabaseListings, ...mockListings]);
     })();
   }, [setListings]);
 

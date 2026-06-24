@@ -15,6 +15,7 @@ import {
   Pencil,
   Star,
 } from "lucide-react";
+import { useRentalsStore } from "@/store/rentals-store";
 
 const propertyTypeLabels: Record<string, string> = {
   apartment: "Apartment",
@@ -69,6 +70,7 @@ export function MyAdsView() {
   const handleDelete = async (id: string) => {
     const supabase = createClient();
     await supabase.from("properties").delete().eq("id", id);
+    useRentalsStore.getState().removeListing(id);
     setProperties((prev) => prev.filter((p) => p.id !== id));
   };
 

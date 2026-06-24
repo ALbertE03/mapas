@@ -48,6 +48,7 @@ interface RentalsState {
   setMapStyle: (style: MapStyle) => void;
   setUserLocation: (location: { lat: number; lng: number } | null) => void;
   addListing: (listing: Listing) => void;
+  removeListing: (id: string) => void;
   setListings: (listings: Listing[]) => void;
   maxPrice: number;
   getFilteredListings: () => Listing[];
@@ -165,6 +166,15 @@ export const useRentalsStore = create<RentalsState>((set, get) => ({
   addListing: (listing) =>
     set((state) => {
       const newListings = [listing, ...state.listings];
+      return {
+        listings: newListings,
+        maxPrice: computeMaxPrice(newListings),
+      };
+    }),
+
+  removeListing: (id) =>
+    set((state) => {
+      const newListings = state.listings.filter((l) => l.id !== id);
       return {
         listings: newListings,
         maxPrice: computeMaxPrice(newListings),
