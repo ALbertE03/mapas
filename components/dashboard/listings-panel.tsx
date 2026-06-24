@@ -66,13 +66,16 @@ export function ListingsPanel({ mode = "compra" }: ListingsPanelProps) {
 
   const handleToggleFavorite = async (listingId: string) => {
     const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
     const listing = useRentalsStore.getState().listings.find((l) => l.id === listingId);
     if (!listing) return;
 
     if (listing.isFavorite) {
-      await supabase.from("favorites").delete().eq("property_id", listingId);
+      await supabase.from("favorites").delete().eq("property_id", listingId).eq("user_id", user.id);
     } else {
-      await supabase.from("favorites").insert({ property_id: listingId });
+      await supabase.from("favorites").insert({ property_id: listingId, user_id: user.id });
     }
     toggleFavorite(listingId);
   };
