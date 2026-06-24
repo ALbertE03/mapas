@@ -20,6 +20,7 @@ import { useRentalsStore } from "@/store/rentals-store";
 import { type Listing, propertyTypeLabels } from "@/mock-data/listings";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ReviewDialog } from "./review-dialog";
 import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
@@ -46,6 +47,7 @@ interface ListingsPanelProps {
 
 export function ListingsPanel({ mode = "compra" }: ListingsPanelProps) {
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
+  const [reviewTarget, setReviewTarget] = React.useState<{ id: string; title: string } | null>(null);
   const {
     selectedListingId,
     searchQuery,
@@ -400,6 +402,18 @@ export function ListingsPanel({ mode = "compra" }: ListingsPanelProps) {
                         )}
                       </div>
                     </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="mt-2 h-7 w-full text-xs"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setReviewTarget({ id: listing.id, title: listing.title });
+                      }}
+                    >
+                      <Star className="mr-1 size-3" />
+                      Rate
+                    </Button>
                   </div>
                 </div>
               );
@@ -542,6 +556,13 @@ export function ListingsPanel({ mode = "compra" }: ListingsPanelProps) {
           </div>
         )}
       </div>
+
+      <ReviewDialog
+        propertyId={reviewTarget?.id ?? ""}
+        propertyTitle={reviewTarget?.title ?? ""}
+        open={!!reviewTarget}
+        onOpenChange={(open) => { if (!open) setReviewTarget(null); }}
+      />
     </div>
   );
 }
